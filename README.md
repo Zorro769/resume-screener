@@ -1,1 +1,1 @@
-# resume-screener
+The AI-powered IT resume screener automatically scans and analyzes job applications, extracting key details such as skills, experience, and education to rank candidates based on their relevance to a specific job. The system stores processed resumes in a database(we chose SQLite), allowing recruiters to quickly retrieve the best matches for a role and access key contact details like email and phone number for seamless hiring.
