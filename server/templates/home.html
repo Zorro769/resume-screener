@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head>
+    <title>Main</title>
+</head>
+<body>
+    <h1>Welcome</h1>
+    <p>Search or create new vacancies.</p>
+    
+    <a href="/create_vacancy"><button>Create</button></a>
+    <a href="/vacancies"><button>View</button></a>
+
+    <h1>Upload resume</h1>
+    <p>Only PDF and DOCX files are allowed.</p>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".pdf,.docx" required>
+        <button type="submit">Upload</button>
+    </form>
+</body>
+</html>

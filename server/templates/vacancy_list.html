@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+    <title>List of vacancies</title>
+</head>
+<body>
+    <h1>List of vacancies</h1>
+    
+    {% if vacancies %}
+        <ul>
+        {% for vacancy in vacancies %}
+            <li>
+                <strong>{{ vacancy.title }}</strong> <br>
+                Description: {{ vacancy.description }} <br>
+                Req: {{ vacancy.requirements }} <br>
+                Date: {{ vacancy.created_at }}
+            </li>
+            <hr>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No vacancies.</p>
+    {% endif %}
+    
+    <a href="/"><button>Main</button></a>
+    <a href="/create_vacancy"><button>Create vacancy</button></a>
+</body>
+</html>
