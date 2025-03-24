@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -7,16 +7,16 @@ import docx
 from werkzeug.utils import secure_filename
 from datetime import datetime
 import os
+import json
 
 app = Flask(__name__)
 
-#sqlite engine
+# SQLite engine
 engine = create_engine('sqlite:///jobs.db', echo=True)
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
 
-
-#vacancy form for database
+# Vacancy model for the database
 class Vacancy(Base):
     __tablename__ = 'vacancies'
     
@@ -31,15 +31,21 @@ class Vacancy(Base):
         self.description = description
         self.requirements = requirements
 
-#making database 
+# Create the database
 Base.metadata.create_all(engine)
 
-#main page
+# Define folder for JSON data
+JSON_FOLDER = "json_data"
+if not os.path.exists(JSON_FOLDER):
+    os.makedirs(JSON_FOLDER)
+JSON_FILE = os.path.join(JSON_FOLDER, "vacancies.json")
+
+# Main page
 @app.route('/')
 def home():
     return render_template('home.html')
 
-#vacancy creation
+# Vacancy creation
 @app.route('/create_vacancy', methods=['GET', 'POST'])
 def create_vacancy():
     if request.method == 'POST':
@@ -48,15 +54,45 @@ def create_vacancy():
         requirements = request.form.get('requirements')
         
         session = Session()
-        vacancy = Vacancy(title=title, description=description, requirements=requirements)
+        vacancy = Vacancy(
+            title=title,
+            description=description,
+            requirements=requirements
+        )
+        
         session.add(vacancy)
         session.commit()
+        
+        data = {
+            "id": vacancy.id,
+            "title": vacancy.title,
+            "description": vacancy.description,
+            "requirements": vacancy.requirements,
+            "created_at": vacancy.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "message": "Vacancy created!"
+        }
         session.close()
+        
+        # Load existing JSON data from the file (if exists) or create empty list
+        if os.path.exists(JSON_FILE):
+            with open(JSON_FILE, "r", encoding="utf-8") as f:
+                try:
+                    vacancies_data = json.load(f)
+                except json.JSONDecodeError:
+                    vacancies_data = []
+        else:
+            vacancies_data = []
+        
+        vacancies_data.append(data)
+        
+        # Save updated JSON data into the designated file
+        with open(JSON_FILE, "w", encoding="utf-8") as f:
+            json.dump(vacancies_data, f, indent=4, ensure_ascii=False)
         
         return redirect(url_for('vacancy_list'))
     return render_template('create_vacancy.html')
 
-#vacancy list
+# Vacancy list
 @app.route('/vacancies')
 def vacancy_list():
     session = Session()
@@ -65,25 +101,30 @@ def vacancy_list():
     return render_template('vacancy_list.html', vacancies=vacancies)
 
 UPLOAD_FOLDER = "uploads"
-ALLOWED_EXTENSIONS = {".pdf", ".docx"}
+ALLOWED_EXTENSIONS = {"pdf", "docx"} 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-#file checker
+# File checker
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-#text from pdf
+    ext = filename.rsplit('.', 1)[1].lower()
+    print(f"Debug tool for document: {ext}")
+    return '.' in filename and ext in ALLOWED_EXTENSIONS
+
+# Text extraction from PDF
 def extract_text_from_pdf(pdf_path):
     text = ""
     with fitz.open(pdf_path) as doc:
         for page in doc:
             text += page.get_text()
     return text
-#text from word
+
+# Text extraction from DOCX
 def extract_text_from_docx(docx_path):
     doc = docx.Document(docx_path)
     text = "\n".join([paragraph.text for paragraph in doc.paragraphs])
     return text
-#uploader
+
+# Uploader
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
@@ -99,14 +140,14 @@ def upload_file():
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
 
-        #text extracteor
+        # Text extractor
         extracted_text = ""
-        if filename.endswith('.pdf'):
+        if filepath.lower().endswith('.pdf'):
             extracted_text = extract_text_from_pdf(filepath)
-        elif filename.endswith('.docx'):
+        elif filepath.lower().endswith('.docx'):
             extracted_text = extract_text_from_docx(filepath)
 
-        return f"File uploaded succesfully!<br><br><strong>EXtracted text</strong><br><pre>{extracted_text}</pre>"
+        return f"File uploaded successfully!<br><br><strong>Extracted text:</strong><br><pre>{extracted_text}</pre>"
 
     return "Not correct format of file", 400
 
