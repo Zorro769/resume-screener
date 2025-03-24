@@ -1,0 +1,50 @@
+[
+    {
+        "id": 3,
+        "title": "btweebwrerw",
+        "description": "brewbwrwerb",
+        "requirements": "bwerbewrb",
+        "created_at": "2025-03-24 00:46:48",
+        "message": "Вакансия успешно создана!"
+    },
+    {
+        "id": 4,
+        "title": "qwecqwecqw",
+        "description": "qcweqwceqw",
+        "requirements": "qcweqwceqwe",
+        "created_at": "2025-03-24 00:51:09",
+        "message": "Вакансия успешно создана!"
+    },
+    {
+        "id": 5,
+        "title": "ceqwceq",
+        "description": "cqwecqwe",
+        "requirements": "ceqwceqw",
+        "created_at": "2025-03-24 00:52:06",
+        "message": "Вакансия успешно создана!"
+    },
+    {
+        "id": 6,
+        "title": "ceqwceq",
+        "description": "cqwecqwe",
+        "requirements": "ceqwceqw",
+        "created_at": "2025-03-24 00:52:33",
+        "message": "Вакансия успешно создана!"
+    },
+    {
+        "id": 7,
+        "title": "йцусйцу",
+        "description": "сйцусйцу",
+        "requirements": "сйуйсцу",
+        "created_at": "2025-03-24 00:54:05",
+        "message": "Vacancy created!"
+    },
+    {
+        "id": 8,
+        "title": "чйцучйцу",
+        "description": "чйцуйцчу",
+        "requirements": "чйцуйчцу",
+        "created_at": "2025-03-24 13:59:56",
+        "message": "Vacancy created!"
+    }
+]
