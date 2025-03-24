@@ -89,16 +89,27 @@ def create_vacancy():
         with open(JSON_FILE, "w", encoding="utf-8") as f:
             json.dump(vacancies_data, f, indent=4, ensure_ascii=False)
         
-        return redirect(url_for('vacancy_list'))
+        return jsonify(data), 201
     return render_template('create_vacancy.html')
 
 # Vacancy list
-@app.route('/vacancies')
+@app.route('/vacancies', methods=['GET'])
 def vacancy_list():
     session = Session()
     vacancies = session.query(Vacancy).all()
     session.close()
-    return render_template('vacancy_list.html', vacancies=vacancies)
+
+    vacancies_json = [
+        {
+            "id": v.id,
+            "title": v.title,
+            "description": v.description,
+            "requirements": v.requirements,
+            "created_at": v.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        } for v in vacancies
+    ]
+
+    return jsonify(vacancies_json)
 
 UPLOAD_FOLDER = "uploads"
 ALLOWED_EXTENSIONS = {"pdf", "docx"} 
