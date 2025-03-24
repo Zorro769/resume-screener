@@ -90,7 +90,7 @@ def create_vacancy():
             json.dump(vacancies_data, f, indent=4, ensure_ascii=False)
         
         return jsonify(data), 201
-    return render_template('create_vacancy.html')
+    return '', 200
 
 # Vacancy list
 @app.route('/vacancies', methods=['GET'])
@@ -160,7 +160,7 @@ def upload_file():
 
         return f"File uploaded successfully!<br><br><strong>Extracted text:</strong><br><pre>{extracted_text}</pre>"
 
-    return "Not correct format of file", 400
+    return "Incorrect format of file", 400
 
 if __name__ == '__main__':
     app.run(debug=True)
