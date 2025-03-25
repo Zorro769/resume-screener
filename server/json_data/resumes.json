@@ -2,6 +2,11 @@
     {
         "id": 1,
         "filename": "amogus.docx",
-        "content": "amogus"
+        "full_name": "Amogus amogus",
+        "email": "amogus@gmail.com",
+        "phone": "+342349324923\n",
+        "education": "Yes",
+        "skills": "github",
+        "experience": "github"
     }
 ]

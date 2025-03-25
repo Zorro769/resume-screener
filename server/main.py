@@ -145,15 +145,15 @@ def extract_resume_data(text):
     data["phone"] = phone_match.group(0) if phone_match else "Not found"
 
     # Extract education
-    education_match = re.findall(r"(university|college|degree|bachelor|master|phd|университет|колледж|магистр|бакалавр)", text, re.IGNORECASE)
+    education_match = re.findall(r"(university|college|degree|bachelor|master|phd|)", text, re.IGNORECASE)
     data["education"] = "Yes" if education_match else "Not found"
 
     # Extract skills
-    skills_match = re.search(r"(Skills|Навыки):\s*(.+)", text, re.IGNORECASE)
+    skills_match = re.search(r"(Skills|):\s*(.+)", text, re.IGNORECASE)
     data["skills"] = skills_match.group(2) if skills_match else "Not found"
 
     # Extract experience
-    experience_match = re.search(r"(Experience|Опыт работы):\s*(.+)", text, re.IGNORECASE)
+    experience_match = re.search(r"(Experience|):\s*(.+)", text, re.IGNORECASE)
     data["experience"] = experience_match.group(2) if experience_match else "Not found"
 
     return data
