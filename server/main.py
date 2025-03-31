@@ -338,11 +338,11 @@ def filter_candidates_by_vacancy(vacancy_id):
             return jsonify({"error": "Vacancy not found"}), 404
 
         if not vacancy.requirements:
-             return jsonify({"error": "Vacancy has no specified requirements"}), 400
+            return jsonify({"error": "Vacancy has no specified requirements"}), 400
 
         required_skills_list = [skill.strip().lower() for skill in re.split(r'[,\s\n]+', vacancy.requirements) if skill.strip()]
         if not required_skills_list:
-             return jsonify({"warning": "Could not extract keywords from vacancy requirements"}), 200
+            return jsonify({"warning": "Could not extract keywords from vacancy requirements"}), 200
 
         print(f"Required skills for vacancy {vacancy_id}: {required_skills_list}")
 
@@ -350,13 +350,9 @@ def filter_candidates_by_vacancy(vacancy_id):
 
         filtered_candidates = []
         for resume in all_resumes:
-            text_to_search = ""
-            if resume.skills:
-                text_to_search += resume.skills.lower() + " "
-            if resume.content:
-                text_to_search += resume.content.lower()
+            text_to_search = (resume.skills or "").lower() + " " + (resume.content or "").lower()
 
-            if not text_to_search:
+            if not text_to_search.strip():
                 continue
 
             found_skills_count = 0
@@ -368,28 +364,23 @@ def filter_candidates_by_vacancy(vacancy_id):
                     break
 
             if found_skills_count > 0:
-                 filtered_candidates.append({
-                      "id": resume.id,
-                      "filename": resume.filename,
-                      "full_name": resume.full_name,
-                      "email": resume.email,
-                      "phone": resume.phone,
-                      "matched_skills_approx": matched_skill_example
-                 })
+                filtered_candidates.append({
+                    "id": resume.id,
+                    "filename": resume.filename,
+                    "full_name": resume.full_name,
+                    "email": resume.email,
+                    "phone": resume.phone,
+                    "matched_skills_approx": matched_skill_example
+                })
 
         print(f"Found {len(filtered_candidates)} candidates for vacancy {vacancy_id}")
-        return jsonify(filtered_candidates)
+        return jsonify({"vacancy_id": vacancy_id, "candidates": filtered_candidates})
 
     except Exception as e:
-        # Ensure session is closed in case of error before returning
-        if session.is_active:
-             session.close()
         print(f"Error filtering candidates for vacancy {vacancy_id}: {e}")
         return jsonify({"error": "Internal server error during filtering"}), 500
     finally:
-        # Final check to ensure session closure
-         if session.is_active:
-              session.close()
+        session.close()
 
 #GEMINI recommendation
 @app.route('/api/best_candidate/<int:vacancy_id>', methods=['GET'])
